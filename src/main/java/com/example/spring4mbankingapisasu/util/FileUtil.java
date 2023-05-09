@@ -1,6 +1,6 @@
-package co.istad.springbootbankingapi.util;
+package com.example.spring4mbankingapisasu.util;
 
-import co.istad.springbootbankingapi.api.file.FileDto;
+import com.example.spring4mbankingapisasu.file.web.FileDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -16,15 +16,26 @@ import java.util.UUID;
 @Component
 public class FileUtil {
     @Value("${file.server-path}")
-    private String fileServerPath;
+    public String fileServerPath;
     @Value("${file.base-url}")
-    private String fileBaseUrl;
+    public String fileBaseUrl;
+
+
     public FileDto uploadFile(MultipartFile multipartFile){
         int lastDotIndex = multipartFile.getOriginalFilename().lastIndexOf(".");
+
         String extension = multipartFile.getOriginalFilename().substring(lastDotIndex+1);
+
+
         long size = multipartFile.getSize();
+
+
         String fileName = String.format("%s.%s", UUID.randomUUID(),extension);
+
+
         String url = String.format("%s%s",fileBaseUrl,fileName);
+
+
         Path path = Paths.get(fileServerPath + fileName);
         try {
             Files.copy(multipartFile.getInputStream(), path);
@@ -38,4 +49,24 @@ public class FileUtil {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Uploading failed...!");
         }
     }
+    Path foundFile;
+    public Path FileAsResource(String fileName) throws IOException {
+        Path Path = Paths.get(fileServerPath);
+
+
+        Files.list(Path).forEach(file -> {
+            if (file.getFileName().toString().startsWith(fileName)) {
+                foundFile = file;
+            }
+        });
+
+        if (foundFile != null) {
+            Path path = Paths.get(fileServerPath);
+            return path;
+        }
+
+        return null;
+    }
+
+
 }
