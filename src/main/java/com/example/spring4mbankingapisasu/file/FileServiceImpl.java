@@ -5,12 +5,17 @@ import com.example.spring4mbankingapisasu.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +23,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService{
 
+    /**
+     * file.server-path=C:\\Users\\LimHai\\OneDrive\\Documents\\LA\\
+     */
     @Value("${file.server-path}")
     private String fileServerPath;
 
+    /**
+     * file.base-url=http://localhost:1200/files/
+     */
     @Value("${file.base-url}")
     private String fileBaseUrl;
 
+    /**
+     *   FileUtil setter ;
+     */
     public FileUtil fileUtil;
-@Autowired
+
+    /**
+     *  @Autowired
+     *     public void setFileUti
+     * @param fileUtil
+     */
+    @Autowired
     public void setFileUtil(FileUtil fileUtil) {
         this.fileUtil = fileUtil;
     }
@@ -37,8 +57,8 @@ public class FileServiceImpl implements FileService{
 
     /**
      *
-     * @param
-     * @return
+     * @param files
+     * @return  public List<FileDto>
      */
 
     @Override
@@ -75,6 +95,28 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
+    public void deleteByName(String name) {
+//        fileUtil.deleteByName(name);
+        Path path = Paths.get(fileServerPath + name);
+        try {
+            boolean isDeleted = Files.deleteIfExists(path);
+            if (!isDeleted){
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR ,
+                        "file is failed to delete");
+            }
+        } catch (IOException e) {
+           throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File is failed to delete");
+        }
+    }
+
+    @Override
+    public Resource download(String name) {
+
+        return fileUtil.findByName(name);
+    }
+
+
+    @Override
     public List<FileDto>
     AllFiles() {
         List<FileDto> listFile = new ArrayList<>();
@@ -89,9 +131,20 @@ public class FileServiceImpl implements FileService{
                 int lastDotIndex = name.lastIndexOf(".");
                 String extension = name.substring(lastDotIndex + 1);
 
-                listFile.add(new FileDto(name, url,size,extension));
+                listFile.add(new FileDto(name, url,extension,size,url));
             }
         }
         return listFile;
+    }
+
+    @Override
+    public FileDto findByName(String name) throws IOException {
+        Resource resource = fileUtil.findByName(name);
+        return FileDto.builder()
+                .name(resource.getFilename())
+                .extension(fileUtil.getExtension(resource.getFilename()))
+                .url(String.format("%s%s",fileUtil.getFileBaseUrl(),resource.getFilename()))
+                .size(resource.contentLength())
+                .build();
     }
 }

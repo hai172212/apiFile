@@ -23,6 +23,9 @@ public interface UserService {
 
 
 
+
+
+
     Integer updateIsDeletedStatusById(Integer id,boolean status);
 
 

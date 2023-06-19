@@ -1,2 +1,4 @@
-package com.example.spring4mbankingapisasu.notification;public record ContentDto() {
+package com.example.spring4mbankingapisasu.notification;
+
+public record ContentDto(String en) {
 }

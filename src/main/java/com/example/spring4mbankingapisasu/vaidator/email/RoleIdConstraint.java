@@ -1,4 +1,4 @@
-package com.example.spring4mbankingapisasu.vaidator;
+package com.example.spring4mbankingapisasu.vaidator.email;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

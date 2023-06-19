@@ -7,12 +7,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class RescueConfigurationHandler  implements WebMvcConfigurer {
     @Value("${file.server-path}")
-private String fileServerPath;
+        private String fileServerPath;
     @Value("${file.client-path}")
-    private String fileClientPath;
+        private String fileClientPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-registry.addResourceHandler(fileClientPath).addResourceLocations("file"+fileServerPath);
+        registry.addResourceHandler(fileClientPath).addResourceLocations("file"+fileServerPath);
     }
 }

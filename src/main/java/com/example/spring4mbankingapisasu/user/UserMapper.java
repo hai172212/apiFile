@@ -1,5 +1,6 @@
 package com.example.spring4mbankingapisasu.user;
 
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -27,9 +28,11 @@ public interface UserMapper {
     Optional<User> selectById(@Param("id") Integer id);
 
     @Select("""
-            SELECT EXISTS(SELECT *
-            FROM users
-            WHERE id = #{id} AND is_deleted = FALSE)
+            SELECT EXISTS(
+                SELECT *
+                FROM users
+                WHERE id = #{id}
+            )
             """)
     boolean existsById(@Param("id") Integer id);
 
@@ -37,6 +40,9 @@ public interface UserMapper {
     @UpdateProvider(type = UserProvider.class, method = "buildUpdateSql")
     void update(@Param("u") User user);
 
+
+    @Select("SELECT EXISTS(SELECT * FROM users WHERE email=#{email})")
+    boolean existByEmail(String email);
 
 
     @SelectProvider(type = UserProvider.class, method = "buildSelectWithPagingSql")
@@ -53,6 +59,10 @@ public interface UserMapper {
 
 //    @UpdateProvider(type = UserProvider.class , method = "buildUpdateIsDelectedById")
 //    void isDelete(@Param("id") Integer id ,@Param("s") boolean status);
-@SelectProvider(type = UserProvider.class, method = "selectUserSql")
-List<User> findAllUser();
+    @SelectProvider(type = UserProvider.class, method = "selectUserSql")
+    List<User> findAllUser();
+
+
+    @Select("SELECT EXISTS(SELECT * FROM roles WHERE id=#{roleId})")
+    boolean checkRoleId(Integer roleId);
 }

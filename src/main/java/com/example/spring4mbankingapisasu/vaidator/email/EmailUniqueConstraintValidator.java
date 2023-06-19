@@ -1,4 +1,4 @@
-package com.example.spring4mbankingapisasu.vaidator;
+package com.example.spring4mbankingapisasu.vaidator.email;
 
 import com.example.spring4mbankingapisasu.user.UserMapper;
 import jakarta.validation.ConstraintValidator;

@@ -25,8 +25,6 @@ public class UserProvider {
             SELECT("*");
             FROM(USERS);
             WHERE("id = #{id}");
-            AND();
-            WHERE("is_deleted = FALSE");
         }}.toString();
     }
 
@@ -38,7 +36,6 @@ public class UserProvider {
             SET("is_student = #{u.isStudent}");
             SET("student_card_id = #{u.studentCard}");
             WHERE("id = #{u.id}");
-
         }}.toString();
     }
 

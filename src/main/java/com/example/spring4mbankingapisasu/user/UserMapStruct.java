@@ -1,5 +1,6 @@
 package com.example.spring4mbankingapisasu.user;
 
+import com.example.spring4mbankingapisasu.auth.web.RegisterDto;
 import com.example.spring4mbankingapisasu.user.web.SaveUserDto;
 import com.example.spring4mbankingapisasu.user.web.UserDto;
 import com.github.pagehelper.PageInfo;
@@ -16,5 +17,5 @@ public interface UserMapStruct {
 
     PageInfo<UserDto> userPageInfoToUserDtoPageInfo(PageInfo<User> modal );
 
-
+    User fromRegoisterDtoToUser(RegisterDto registerDto);
 }

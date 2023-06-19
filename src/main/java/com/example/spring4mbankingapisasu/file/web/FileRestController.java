@@ -4,16 +4,20 @@ import com.example.spring4mbankingapisasu.base.BaseApi;
 import com.example.spring4mbankingapisasu.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/api/files")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 @Slf4j
 public class FileRestController {
@@ -72,8 +76,8 @@ public class FileRestController {
         if (fileDto.isEmpty()) {
             return BaseApi
                     .builder()
-                    .data(null)
-                    .message("Data Not have Please Enter Data to get")
+                    .data(fileDto)
+                    .message("Data  have Please Enter Data to get")
                     .build();
         } else {
             return BaseApi.builder().status(true)
@@ -92,9 +96,43 @@ public class FileRestController {
         boolean files = fileService.removeAllFile();
         return BaseApi.builder().status(true)
                 .code(HttpStatus.OK.value())
-                .message("File have been Removed ")
+                .message("File have been Removed all ")
                 .timestamp(LocalDateTime.now())
                 .data(files)
                 .build();
     }
+
+
+    @GetMapping("/{name}")
+    public BaseApi<?> findByName(@PathVariable("name") String name ) throws IOException {
+        FileDto fileDto = fileService.findByName(name);
+        return BaseApi.builder().status(true)
+                .code(HttpStatus.OK.value())
+                .message("File have been found ")
+                .timestamp(LocalDateTime.now())
+                .data(fileDto)
+                .build();
+
+    }
+
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{name}")
+    public void deleteByName(@PathVariable("name") String name){
+        fileService.deleteByName(name);
+    }
+
+    @GetMapping("/download/{name}")
+    public ResponseEntity<?> download(@PathVariable String name) throws IOException {
+        Resource resource = fileService.download(name);
+
+            FileDto fileDto = fileService.findByName(name);
+
+        Map<String , Object> baseRest = new HashMap<>();
+        baseRest.put("status",true);
+
+        return ResponseEntity.ok(fileDto);
+    }
+
+
 }
